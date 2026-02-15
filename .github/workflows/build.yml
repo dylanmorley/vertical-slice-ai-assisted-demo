@@ -1,0 +1,137 @@
+name: Build Solution
+on:
+  workflow_dispatch:
+  pull_request:
+    types: [ opened, ready_for_review, synchronize ]
+    branches: [ main ]
+    paths-ignore:
+      - 'docs/**'
+      - '*.md'
+  push:
+    branches:
+      - main
+    tags:
+      - 'v*.*.*'
+    paths-ignore:
+      - 'docs/**'
+      - '*.md'
+
+jobs:
+  build:
+    if: github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+    outputs:
+      semVer: ${{ steps.version_step.outputs.semVer }} # Pass semVer to the image job
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup net10.0 SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Install GitVersion
+        uses: gittools/actions/gitversion/setup@v3.1.11
+        with:
+          versionSpec: '6.0.x'
+          preferLatestVersion: true
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: src/clientapp/package-lock.json
+
+      - name: Install frontend dependencies
+        working-directory: src/clientapp
+        run: npm ci
+
+      - name: Determine Version
+        id: version_step
+        uses: gittools/actions/gitversion/execute@v3.1.11
+
+      - name: Restore dotnet tools
+        run: dotnet tool restore
+
+      - name: Build
+        run: dotnet build **/*.sln /p:Version=${{ steps.version_step.outputs.semVer }}
+
+      - name: Run scenario tests
+        run: dotnet test src/VerticalSlice.Web.Api.ScenarioTests/VerticalSlice.Web.Api.ScenarioTests.csproj --no-build --collect:"XPlat Code Coverage" --verbosity normal --results-directory ./TestResults --logger "trx;LogFileName=scenario_test_results.xml"
+
+      - name: Run API tests
+        run: dotnet test src/VerticalSlice.Web.Api.Tests/VerticalSlice.Web.Api.Tests.csproj --no-build --collect:"XPlat Code Coverage" --verbosity normal --results-directory ./TestResults --logger "trx;LogFileName=test_results.xml"
+
+      - name: Generate API client (OpenAPI -> Orval)
+        working-directory: src/clientapp
+        run: |
+          npm run prebuild
+          test -f src/api/generated/client.ts
+
+      - name: Run frontend tests
+        working-directory: src/clientapp
+        run: npm run test:ci -- --outputFile=../../TestResults/frontend_test_results.xml
+
+      - name: Upload frontend test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: frontend-test-results
+          path: TestResults/frontend_test_results.xml
+
+      - name: Code Coverage Summary Report
+        uses: irongut/CodeCoverageSummary@v1.3.0
+        with:
+          filename: 'TestResults/*/coverage.cobertura.xml'
+          badge: true
+          format: 'markdown'
+          output: 'both'
+
+      - name: Add Coverage PR Comment
+        uses: marocchino/sticky-pull-request-comment@v2
+        if: github.event_name == 'pull_request'
+        with:
+          recreate: true
+          path: code-coverage-results.md
+
+      - name: Write to Job Summary
+        run: cat code-coverage-results.md >> $GITHUB_STEP_SUMMARY
+
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: code-coverage-report
+          path: TestResults
+
+  image:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: Production
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4 
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          registry: docker.io
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}        
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./src
+          file: ./src/Dockerfile
+          push: true
+          no-cache: true
+          tags: |
+            ${{ needs.build.outputs.semVer && format('verticalslice.azurecr.io/verticalslice-api:{0}', needs.build.outputs.semVer) || 'verticalslice.azurecr.io/verticalslice-api:latest' }}
+            verticalslice.azurecr.io/verticalslice-api:latest
+          build-args: |
+            NPM_TOKEN=${{ secrets.NPM_TOKEN }}
+            VERSION=${{ needs.build.outputs.semVer }}

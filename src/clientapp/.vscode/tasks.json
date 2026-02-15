@@ -1,0 +1,13 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "npm: start",
+        "type": "npm",
+        "script": "start",
+        "group": "build",
+        "problemMatcher": [],
+        "detail": "This task runs the start script defined in package.json."
+      }
+    ]
+  }
