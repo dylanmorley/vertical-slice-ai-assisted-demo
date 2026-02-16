@@ -232,10 +232,13 @@ export async function customFetch<T>(url: string, options: RequestInit = {}): Pr
         }
 
         try {
-          const token = await config.tokenProvider()
-          if (token) {
-            headers.set('Authorization', `Bearer ${token}`)
-          }
+          // If we were using authentication, then we'd get an access token here and inject it
+          // for all API calls
+
+          // const token = await config.tokenProvider()
+          //if (token) {
+          //  headers.set('Authorization', `Bearer ${token}`)
+          // }
         } catch (error) {
           console.warn('Failed to get auth token:', error)
         }
