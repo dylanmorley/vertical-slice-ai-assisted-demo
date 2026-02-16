@@ -37,7 +37,7 @@ const DEFAULT_RETRY_CONFIG: RetryConfig = {
 }
 
 let config: Required<Omit<ApiClientConfig, 'retry'>> & { retry: RetryConfig } = {
-  baseUrl: import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1',
+  baseUrl: import.meta.env.VITE_API_URL || 'http://localhost:8080/api/v1',
   timeout: 30000,
   retry: { ...DEFAULT_RETRY_CONFIG },
   tokenProvider: async () => null,

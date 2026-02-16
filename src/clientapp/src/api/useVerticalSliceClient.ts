@@ -1,41 +1,40 @@
 /**
  * React Hook for Vertical Slice API Client with automatic authentication
  *
- * This hook integrates the API client with the UserContext to provide
- * automatic token management and authentication.
+ * This hook configures the API client with the current user's authentication token.
+ * After calling this hook once in your app/component tree, all Orval-generated
+ * API functions will automatically include the auth token in requests.
  *
  * @example
- * import { useVerticalSliceClient } from '../api';
+ * import { useVerticalSliceClient, getAuditRecords } from '../api';
  *
  * function MyComponent() {
- *   const apiClient = useVerticalSliceClient();
+ *   useVerticalSliceClient(); // Configure auth
  *
  *   useEffect(() => {
  *     async function loadData() {
- *       const nodes = await apiClient.nodes.getAll();
- *       console.log(nodes);
+ *       const response = await getAuditRecords({ page: 1, pageSize: 50 });
+ *       console.log(response.data);
  *     }
  *     loadData();
- *   }, [apiClient]);
+ *   }, []);
  * }
  */
 
-import { useEffect, useRef } from 'react'
+import { useEffect } from 'react'
 import { useUser } from '../contexts/UserContext'
 import { configureApi, setTokenProvider } from './customFetch'
-import { getVerticalSliceClient, VerticalSliceClient } from './client'
 
 // Track if we've configured the API
 let isConfigured = false
 
 /**
- * Hook that provides a VerticalSliceClient instance configured with the current user's token
- *
- * @returns VerticalSliceClient instance with automatic authentication
+ * Hook that configures the API client with the current user's authentication token.
+ * Call this once in your component or app root to enable authenticated API requests.
+ * All Orval-generated API functions will then automatically include the auth token.
  */
-export function useVerticalSliceClient(): VerticalSliceClient {
+export function useVerticalSliceClient(): void {
   const { getToken } = useUser()
-  const clientRef = useRef<VerticalSliceClient | null>(null)
 
   // Configure API on first use
   if (!isConfigured) {
@@ -45,25 +44,17 @@ export function useVerticalSliceClient(): VerticalSliceClient {
     isConfigured = true
   }
 
-  // Initialize the client on first render
-  if (!clientRef.current) {
-    clientRef.current = getVerticalSliceClient()
-  }
-
   // Update token provider if getToken changes
   useEffect(() => {
     setTokenProvider(getToken)
   }, [getToken])
-
-  return clientRef.current
 }
 
 /**
- * Hook for components that need direct access to getToken from UserContext
- * This is useful when you want to initialize the client yourself
+ * Hook for components that need direct access to authentication state
  *
  * @example
- * const { getToken } = useVerticalSliceAuth();
+ * const { getToken, isAuthenticated } = useVerticalSliceAuth();
  */
 export function useVerticalSliceAuth() {
   const { getToken, isAuthenticated, isLoading } = useUser()

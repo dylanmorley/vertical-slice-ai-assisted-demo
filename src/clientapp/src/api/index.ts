@@ -9,19 +9,11 @@ export {
   type RetryConfig,
 } from './customFetch'
 
-// Client and endpoint classes
-export {
-  VerticalSliceClient,
-  getVerticalSliceClient,
-  resetVerticalSliceClient,
-  AuditEndpoint,
-} from './client'
-
 // React hooks
 export { useVerticalSliceClient, useVerticalSliceAuth } from './useVerticalSliceClient'
 
-// Re-export all generated types
+// Generated API types
 export type * from './generated/model'
 
-// Re-export generated functions for direct use if needed
+// Generated API functions - use these directly for API calls
 export * from './generated/client'

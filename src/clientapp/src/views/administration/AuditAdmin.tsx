@@ -19,16 +19,14 @@ import {
   CPaginationItem,
   CFormSelect,
   CButton,
-  CInputGroup,
-  CInputGroupText,
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
-import { cilSearch, cilShieldAlt, cilClock, cilUser, cilWarning } from '@coreui/icons'
-import { useVerticalSliceClient } from '../../api'
+import { cilShieldAlt, cilClock, cilUser, cilWarning } from '@coreui/icons'
+import { useVerticalSliceClient, getAuditRecords } from '../../api'
 import type { AuditSummary, GetAuditRecordsParams as AuditQueryParams } from '../../api'
 
 const AuditAdmin = () => {
-  const apiClient = useVerticalSliceClient()
+  useVerticalSliceClient() // Configure auth
 
   const [audits, setAudits] = useState<AuditSummary[]>([])
   const [loading, setLoading] = useState(true)
@@ -72,11 +70,11 @@ const AuditAdmin = () => {
         isSuccess: successFilter !== null ? successFilter : undefined,
       }
 
-      const response = await apiClient.audit.getRecords(params)
+      const response = await getAuditRecords(params)
 
-      setAudits(response.data)
-      setTotalPages(response.pagination.totalPages)
-      setTotalItems(response.pagination.totalItems)
+      setAudits(response.data.data)
+      setTotalPages(response.data.pagination.totalPages)
+      setTotalItems(response.data.pagination.totalItems)
     } catch (err) {
       console.error('Failed to load audit records:', err)
       setError('Failed to load audit records')
