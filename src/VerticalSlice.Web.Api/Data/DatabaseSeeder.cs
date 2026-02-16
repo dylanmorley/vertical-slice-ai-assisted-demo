@@ -58,7 +58,6 @@ public static class DatabaseSeeder
         await context.Database.EnsureCreatedAsync();
 
         // Seed data in order of dependencies
-        await SeedGeographiesAsync(context, provider);
         await SeedAuditsAsync(context);
 
         await context.SaveChangesAsync();
@@ -145,16 +144,5 @@ public static class DatabaseSeeder
         }
 
         await context.Audit.AddRangeAsync(audits);
-    }
-
-    private static async Task SeedGeographiesAsync(VerticalSliceDataContext context, ISeedDataProvider provider)
-    {
-        if (await context.Geography.AnyAsync())
-        {
-            return;
-        }
-
-        List<Geography> geographies = provider.GetGeographies();
-        await context.Geography.AddRangeAsync(geographies);
     }
 }

@@ -12,20 +12,9 @@ public class VerticalSliceDataContext(DbContextOptions<VerticalSliceDataContext>
 {
     public DbSet<Audit> Audit { get; set; }
 
-    public DbSet<Geography> Geography { get; set; }
-
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
-
-        // Configure Node entity
-
-        // Configure Geography entity
-        modelBuilder.Entity<Geography>(entity =>
-        {
-            entity.HasKey(e => e.GeographyId);
-            entity.Property(e => e.GeographyId).ValueGeneratedOnAdd();
-        });
 
         // Configure Audit table
         modelBuilder.Entity<Audit>(entity =>

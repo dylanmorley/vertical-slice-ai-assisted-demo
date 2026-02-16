@@ -12,9 +12,4 @@ public interface ISeedDataProvider
     ///     The identifier for this seed data set.
     /// </summary>
     SeedDataSet DataSet { get; }
-
-    /// <summary>
-    ///     Provides geographic locations for risk mapping.
-    /// </summary>
-    List<Geography> GetGeographies();
 }
