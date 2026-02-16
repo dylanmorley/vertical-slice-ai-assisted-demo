@@ -73,13 +73,9 @@ public class GetAllAuditQueryHandler(VerticalSliceDataContext dataContext)
                 (a.Context ?? string.Empty).ToLower().Contains(searchTerm));
         }
 
-        // Get total count before pagination
         int totalCount = await baseQuery.CountAsync();
 
-        // Apply sorting (newest first by default)
         IOrderedQueryable<Audit> sortedQuery = baseQuery.OrderByDescending(a => a.Timestamp);
-
-        // Apply pagination
         int skip = (request.Page - 1) * request.PageSize;
         List<Audit> audits = await sortedQuery
             .Skip(skip)
