@@ -10,7 +10,7 @@ export {
 } from './customFetch'
 
 // React hooks
-export { useVerticalSliceClient, useVerticalSliceAuth } from './useVerticalSliceClient'
+export { useVerticalSliceClient } from './useVerticalSliceClient'
 
 // Generated API types
 export type * from './generated/model'

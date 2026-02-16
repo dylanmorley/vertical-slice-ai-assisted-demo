@@ -49,19 +49,3 @@ export function useVerticalSliceClient(): void {
     setTokenProvider(getToken)
   }, [getToken])
 }
-
-/**
- * Hook for components that need direct access to authentication state
- *
- * @example
- * const { getToken, isAuthenticated } = useVerticalSliceAuth();
- */
-export function useVerticalSliceAuth() {
-  const { getToken, isAuthenticated, isLoading } = useUser()
-
-  return {
-    getToken,
-    isAuthenticated,
-    isLoading,
-  }
-}

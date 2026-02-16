@@ -44,21 +44,3 @@ export const useTelemetry = (): TelemetryContextType => {
   }
   return context
 }
-
-/**
- * Higher-order component to wrap components with telemetry context
- */
-export const withTelemetry = <P extends object>(
-  WrappedComponent: React.ComponentType<P>,
-  telemetryConfig?: TelemetryConfig,
-) => {
-  const WithTelemetryComponent: React.FC<P> = (props) => (
-    <TelemetryProvider config={telemetryConfig}>
-      <WrappedComponent {...props} />
-    </TelemetryProvider>
-  )
-
-  WithTelemetryComponent.displayName = `withTelemetry(${WrappedComponent.displayName || WrappedComponent.name})`
-
-  return WithTelemetryComponent
-}

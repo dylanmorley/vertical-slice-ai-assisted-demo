@@ -2,12 +2,8 @@ import React, { Suspense, useEffect } from 'react'
 import { HashRouter, Route, Routes } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import type { RootState } from './store'
-import ProtectedRoute from './protectedRoute'
 import { CSpinner, useColorModes } from '@coreui/react'
 import './scss/style.scss'
-
-// We use those styles to show code examples, you should remove them in your application.
-import './scss/examples.scss'
 import { useAuth0 } from '@auth0/auth0-react'
 import { UserProvider } from './contexts/UserContext'
 import { TelemetryProvider } from './services/telemetry/TelemetryProvider'
@@ -16,7 +12,7 @@ import { TelemetryProvider } from './services/telemetry/TelemetryProvider'
 const DefaultLayout = React.lazy(() => import('./layout/DefaultLayout.tsx'))
 
 const App = () => {
-  const { isLoading, error, logout, isAuthenticated } = useAuth0()
+  const { error } = useAuth0()
 
   const { isColorModeSet, setColorMode } = useColorModes('vertical-slice')
   const storedTheme = useSelector((state: RootState) => state.theme)

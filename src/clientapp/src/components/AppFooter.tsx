@@ -5,7 +5,7 @@ const AppFooter = () => {
   return (
     <CFooter className="px-4">
       <div>
-        <span className="ms-1">&copy; 2025 node guard.</span>
+        <span className="ms-1">&copy; 2026 Vertical Slice.</span>
       </div>
     </CFooter>
   )

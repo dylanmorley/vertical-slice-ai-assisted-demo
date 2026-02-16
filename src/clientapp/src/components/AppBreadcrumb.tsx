@@ -53,15 +53,12 @@ const AppBreadcrumb = () => {
         </Link>
       </CBreadcrumbItem>
       {breadcrumbs.map((breadcrumb, index) => {
-        // Special case: Nodes Management should link to /nodes
-        const linkPath = breadcrumb.name === 'Nodes Management' ? '/nodes' : breadcrumb.pathname
-
         return (
           <CBreadcrumbItem active={breadcrumb.active} key={index}>
             {breadcrumb.active ? (
               breadcrumb.name
             ) : (
-              <Link to={linkPath} style={{ textDecoration: 'none', color: 'inherit' }}>
+              <Link to={breadcrumb.pathname} style={{ textDecoration: 'none', color: 'inherit' }}>
                 {breadcrumb.name}
               </Link>
             )}

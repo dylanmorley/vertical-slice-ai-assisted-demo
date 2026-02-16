@@ -177,49 +177,4 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
   return <UserContext.Provider value={contextValue}>{children}</UserContext.Provider>
 }
 
-/**
- * Higher-order component for components that need user context
- */
-export const withUser = <P extends object>(
-  WrappedComponent: React.ComponentType<P>,
-): React.FC<P> => {
-  const WithUserComponent: React.FC<P> = (props) => (
-    <UserProvider>
-      <WrappedComponent {...props} />
-    </UserProvider>
-  )
-  return WithUserComponent
-}
-
-/**
- * Permission-based render guard
- */
-interface RequirePermissionProps {
-  permission?: string
-  permissions?: string[]
-  requireAll?: boolean
-  children: ReactNode
-  fallback?: ReactNode
-}
-
-export const RequirePermission: React.FC<RequirePermissionProps> = ({
-  permission,
-  permissions,
-  requireAll = false,
-  children,
-  fallback = null,
-}) => {
-  const { hasPermission, hasAnyPermission, hasAllPermissions } = useUser()
-
-  const hasAccess = permission
-    ? hasPermission(permission)
-    : permissions
-      ? requireAll
-        ? hasAllPermissions(permissions)
-        : hasAnyPermission(permissions)
-      : false
-
-  return <>{hasAccess ? children : fallback}</>
-}
-
 export default UserProvider

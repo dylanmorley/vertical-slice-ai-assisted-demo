@@ -16,7 +16,7 @@ import { Link } from 'react-router-dom'
 
 const AppHeaderDropdown = () => {
   const { logout } = useAuth0()
-  const { user, hasPermission, getDisplayName } = useUser()
+  const { user } = useUser()
 
   const handleLogout = () => {
     logout({
