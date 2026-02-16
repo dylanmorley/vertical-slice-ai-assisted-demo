@@ -201,11 +201,9 @@ Once you've pulled the repo, here's a prompt to get you going. Use your tooling 
 ```plaintext
 We’re generating new screens to model geography data in the system  - we need a new screen to display a list of geographies, and one that allows us to perform adds and updates.
 
-We need a new endpoint that returns a single page of geography data.
-
 1.	Build new endpoints that returns a paginated list of geography data, as well as 'get single geography by id', and 'add or update a geography'
 2.	Add an Geography entity to the Entity Framework context and seed data following existing patterns. This should have name, short code, geo codes, and other useful data about geography informatioon
-3.	Implementnew CQRS query, command and handlers to handle paginated data for the list view as well as getting single items or updating items
+3.	Implement new CQRS query, command and handlers to handle paginated data for the list view as well as getting single items or updating items
 4.	Create a new response object for the API Follow existing OpenAPI patterns.
 5.	Build the project to generate the OpenAPI spec and client.
 6.	Create the new React views using the Orval-generated methods.
