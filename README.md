@@ -2,9 +2,10 @@
 
 A reference implementation demonstrating **Vertical Slice Architecture** optimized for **AI-assisted engineering** with .NET 10, React 19, and Aspire 13.1 orchestration.
 
+
 ## 🎯 Purpose
 
-This solution serves as a **production-grade example** of how to structure applications using Vertical Slice Architecture in a way that maximizes the effectiveness of AI-powered development tools like GitHub Copilot.
+This solution serves as an example of how to structure applications using Vertical Slice Architecture in a way that maximizes the effectiveness of AI-powered development tools like GitHub Copilot.
 
 ### Why Vertical Slice Architecture + AI?
 
@@ -194,6 +195,27 @@ function MyComponent() {
 - **Playwright** - End-to-end testing
 
 ## 📝 Adding a New Feature (Vertical Slice)
+
+Once you've pulled the repo, here's a prompt to get you going. Use your tooling of choice, let's create an entirely new API and some screens in a single shot!
+
+```plaintext
+We’re generating new screens to model geography data in the system  - we need a new screen to display a list of geographies, and one that allows us to perform adds and updates.
+
+We need a new endpoint that returns a single page of geography data.
+
+1.	Build new endpoints that returns a paginated list of geography data, as well as 'get single geography by id', and 'add or update a geography'
+2.	Add an Geography entity to the Entity Framework context and seed data following existing patterns. This should have name, short code, geo codes, and other useful data about geography informatioon
+3.	Implementnew CQRS query, command and handlers to handle paginated data for the list view as well as getting single items or updating items
+4.	Create a new response object for the API Follow existing OpenAPI patterns.
+5.	Build the project to generate the OpenAPI spec and client.
+6.	Create the new React views using the Orval-generated methods.
+7.	Apply existing CoreUI styling patterns to create appealing screens for listing and editing geographies
+8.	Add navigation and breadcrumb plumbing to access the screens
+9.	Add Web.Api tests following existing patterns to verify the API returns expected data
+```
+
+The AI and automated generation should wire everything up - you'll have a fairly large number of files created after running the prompt - but all hyper localised on 'listing and maintaining geography data'. You can quickly see how this pattern will allow you to add more and more functionality, while keeping quality high through testing the overall API architecture with automated data-seeding baked in.
+
 
 ### Backend
 ```bash
