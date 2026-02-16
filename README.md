@@ -281,13 +281,21 @@ View in Aspire Dashboard or export to your preferred backend (Jaeger, Zipkin, Ap
 }
 ```
 
-### Frontend (`.env.local`)
+## Using docker
+
+Run this in the repo root to build the application
+
 ```bash
-VITE_API_URL=http://localhost:5000/api/v1
-VITE_AUTH0_DOMAIN=your-domain.auth0.com
-VITE_AUTH0_CLIENT_ID=your-client-id
-VITE_AUTH0_AUDIENCE=https://vertical-slice.com/
+docker build -t vertical-slice .
 ```
+
+Then, you can run that with
+
+```bash
+docker run -p 8080:8080 vertical-slice
+```
+
+That runs the dotnet application, serving the react app and API on the same port, with the api routing via /api/ and all other paths routing to the client react router
 
 ## 🤝 Contributing
 
