@@ -36,8 +36,21 @@ const DEFAULT_RETRY_CONFIG: RetryConfig = {
   retryableStatusCodes: [408, 429, 500, 502, 503, 504],
 }
 
+/**
+ * Get the default base URL for API requests.
+ * Uses VITE_API_URL if set, otherwise constructs from current origin.
+ */
+function getDefaultBaseUrl(): string {
+  if (import.meta.env.VITE_API_URL) {
+    return import.meta.env.VITE_API_URL
+  }
+  // For Docker and dynamic deployments, use the current origin + /api/v1
+  // This allows the API to be accessed from whatever host the app is deployed on
+  return `${window.location.origin}/api/v1`
+}
+
 let config: Required<Omit<ApiClientConfig, 'retry'>> & { retry: RetryConfig } = {
-  baseUrl: import.meta.env.VITE_API_URL || 'http://localhost:8080/api/v1',
+  baseUrl: getDefaultBaseUrl(),
   timeout: 30000,
   retry: { ...DEFAULT_RETRY_CONFIG },
   tokenProvider: async () => null,
