@@ -32,15 +32,6 @@ public abstract class PlaywrightTestBase
                 SlowMo = _isHeaded ? 250 : 0,
                 Channel = "chrome" // Force Google Chrome instead of Brave/Edge/Chromium
             });
-
-            // Perform a single login and capture the storage state so every
-            // subsequent test context starts already authenticated.
-            if (_authStorageState is null)
-            {
-                TestContext.Progress.WriteLine("[auth] Acquiring authentication state via Auth0 login...");
-                _authStorageState = await AcquireAuthStorageStateAsync();
-                TestContext.Progress.WriteLine("[auth] Authentication state captured successfully.");
-            }
         }
         catch
         {
@@ -137,10 +128,6 @@ public abstract class PlaywrightTestBase
 
         if (redirectedToIdP)
         {
-            // Session expired – perform a fresh login.
-            TestContext.Progress.WriteLine("[auth] Storage state expired, performing fresh login.");
-            await PerformAuth0LoginAsync(frontendOrigin);
-
             // Update the cached storage state for remaining tests.
             _authStorageState = await Page.Context.StorageStateAsync();
             TestContext.Progress.WriteLine("[auth] Updated cached storage state.");
@@ -155,94 +142,6 @@ public abstract class PlaywrightTestBase
 
         await Page.WaitForLoadStateAsync(LoadState.DOMContentLoaded);
         TestContext.Progress.WriteLine($"[nav] Page ready at: {Page.Url}");
-    }
-
-    /// <summary>
-    ///     Opens a throwaway context, logs in through Auth0, and captures the
-    ///     resulting cookies + localStorage as a JSON string that can be injected
-    ///     into subsequent contexts via <see cref="BrowserNewContextOptions.StorageState" />.
-    /// </summary>
-    private async Task<string> AcquireAuthStorageStateAsync()
-    {
-        TestContext.Progress.WriteLine("[auth] Creating temporary context for initial login...");
-        IBrowserContext ctx = await _browser!.NewContextAsync();
-        IPage page = await ctx.NewPageAsync();
-        string frontendOrigin = new Uri(FrontendUrl).GetLeftPart(UriPartial.Authority);
-
-        TestContext.Progress.WriteLine($"[auth] Navigating to {FrontendUrl}/#/dashboard");
-        await page.GotoAsync($"{FrontendUrl}/#/dashboard");
-
-        bool needsLogin;
-        try
-        {
-            await page.WaitForURLAsync(
-                url => !url.StartsWith(frontendOrigin, StringComparison.OrdinalIgnoreCase),
-                new PageWaitForURLOptions { Timeout = 10_000 });
-            needsLogin = true;
-            TestContext.Progress.WriteLine($"[auth] Redirected to Auth0 login at: {page.Url}");
-        }
-        catch
-        {
-            needsLogin = false;
-            TestContext.Progress.WriteLine("[auth] Already authenticated, capturing existing session.");
-        }
-
-        if (needsLogin)
-        {
-            TestContext.Progress.WriteLine("[auth] Performing Auth0 login...");
-            await PerformAuth0LoginOnPageAsync(page, frontendOrigin);
-            TestContext.Progress.WriteLine($"[auth] Login complete, returned to: {page.Url}");
-        }
-
-        string storageState = await ctx.StorageStateAsync();
-        TestContext.Progress.WriteLine($"[auth] Storage state captured ({storageState.Length} bytes)");
-
-        await ctx.CloseAsync();
-        return storageState;
-    }
-
-    private async Task PerformAuth0LoginAsync(string frontendOrigin) =>
-        await PerformAuth0LoginOnPageAsync(Page, frontendOrigin);
-
-    private static async Task PerformAuth0LoginOnPageAsync(IPage page, string frontendOrigin)
-    {
-        string username = Environment.GetEnvironmentVariable("VERTICALSLICE_E2E_USERNAME") ?? "e2e-test@test.com";
-        string password = Environment.GetEnvironmentVariable("VERTICALSLICE_E2E_PASSWORD") ?? "Password123!";
-
-        await page.WaitForLoadStateAsync(LoadState.DOMContentLoaded);
-
-        ILocator emailInput = page.Locator("input[name='username'], input[name='email'], input[type='email']");
-        await Expect(emailInput.First).ToBeVisibleAsync(new LocatorAssertionsToBeVisibleOptions { Timeout = 30_000 });
-        await emailInput.First.FillAsync(username);
-
-        ILocator passwordInput = page.Locator("input[name='password'], input[type='password']");
-        await Expect(passwordInput.First)
-            .ToBeVisibleAsync(new LocatorAssertionsToBeVisibleOptions { Timeout = 30_000 });
-        await passwordInput.First.FillAsync(password);
-
-        ILocator submit = page.Locator("button[type='submit']");
-        await submit.First.ClickAsync();
-
-        // Handle possible consent/continue step.
-        ILocator maybeContinue =
-            page.Locator("button:has-text('Accept'), button:has-text('Authorize'), button:has-text('Continue')");
-        if (await maybeContinue.CountAsync() > 0)
-        {
-            try
-            {
-                await maybeContinue.First.ClickAsync(new LocatorClickOptions { Timeout = 2_000 });
-            }
-            catch
-            {
-                /* ignore */
-            }
-        }
-
-        await page.WaitForURLAsync(
-            url => url.StartsWith(frontendOrigin, StringComparison.OrdinalIgnoreCase),
-            new PageWaitForURLOptions { Timeout = 60_000 });
-
-        await page.WaitForLoadStateAsync(LoadState.NetworkIdle);
     }
 
     private static ILocatorAssertions Expect(ILocator locator) => Assertions.Expect(locator);

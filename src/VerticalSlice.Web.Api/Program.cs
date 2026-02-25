@@ -36,8 +36,7 @@ if (!isSwaggerCli)
 {
     using IServiceScope scope = app.Services.CreateScope();
     VerticalSliceDataContext db = scope.ServiceProvider.GetRequiredService<VerticalSliceDataContext>();
-
-    await DatabaseSeeder.SeedFromEnvironmentAsync(db);
+    await DatabaseSeeder.SeedAsync(db);
 }
 
 app.MapFallbackToFile("index.html");

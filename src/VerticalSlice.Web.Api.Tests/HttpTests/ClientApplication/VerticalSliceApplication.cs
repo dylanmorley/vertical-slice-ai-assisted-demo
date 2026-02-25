@@ -50,7 +50,7 @@ public class VerticalSliceApplication : WebApplicationFactory<VerticalSlice.Web.
             var db = scopedServices.GetRequiredService<VerticalSliceDataContext>();
 
             db.Database.EnsureCreated();
-            DatabaseSeeder.SeedAsync(db, "InMemoryTesting").GetAwaiter().GetResult();
+            DatabaseSeeder.SeedAsync(db).GetAwaiter().GetResult();
 
             services.PostConfigure<JwtBearerOptions>(JwtBearerDefaults.AuthenticationScheme,
                 options =>
@@ -110,7 +110,7 @@ public class VerticalSliceApplication : WebApplicationFactory<VerticalSlice.Web.
         await db.Database.EnsureDeletedAsync();
         await db.Database.EnsureCreatedAsync();
 
-        await DatabaseSeeder.SeedAsync(db, "InMemoryTesting");
+        await DatabaseSeeder.SeedAsync(db);
         Console.WriteLine("Database reset completed.");
     }
 
@@ -128,7 +128,7 @@ public class VerticalSliceApplication : WebApplicationFactory<VerticalSlice.Web.
         if (!hasData)
         {
             // Database is empty, reseed it
-            await DatabaseSeeder.SeedAsync(db, "InMemoryTesting");
+            await DatabaseSeeder.SeedAsync(db);
         }
     }
 }

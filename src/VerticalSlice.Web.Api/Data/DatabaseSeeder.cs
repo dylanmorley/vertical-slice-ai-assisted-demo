@@ -1,7 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
-using VerticalSlice.Web.Api.Data.SeedDataProviders;
-using VerticalSlice.Web.Api.Model;
 
 namespace VerticalSlice.Web.Api.Data;
 
@@ -13,47 +11,12 @@ namespace VerticalSlice.Web.Api.Data;
 [ExcludeFromCodeCoverage]
 public static class DatabaseSeeder
 {
-    /// <summary>
-    ///     Environment variable name for specifying the seed data set.
-    /// </summary>
-    public const string SeedDataSetEnvVar = "VERTICALSLICE_SEED_DATA_SET";
-
-    /// <summary>
-    ///     Seeds the database with the default data set (Intelligence Community).
-    /// </summary>
-    public static Task SeedAsync(VerticalSliceDataContext context, string? environment = null) =>
-        SeedAsync(context, SeedDataSet.FinancialInstitution);
-
-    /// <summary>
-    ///     Seeds the database with the specified data set.
-    /// </summary>
-    /// <param name="context">The database context.</param>
-    /// <param name="dataSet">The seed data set to use.</param>
-    public static async Task SeedAsync(VerticalSliceDataContext context, SeedDataSet dataSet)
-    {
-        ISeedDataProvider provider = SeedDataProviderFactory.Create(dataSet);
-        await SeedWithProviderAsync(context, provider);
-    }
-
-    /// <summary>
-    ///     Seeds the database using the data set specified in the environment variable NODEGUARD_SEED_DATA_SET.
-    ///     Falls back to the specified default if the environment variable is not set.
-    /// </summary>
-    public static Task SeedFromEnvironmentAsync(
-        VerticalSliceDataContext context,
-        SeedDataSet defaultDataSet = SeedDataSet.FinancialInstitution)
-    {
-        string? envValue = Environment.GetEnvironmentVariable(SeedDataSetEnvVar);
-        SeedDataSet dataSet = SeedDataProviderFactory.ParseDataSet(envValue, defaultDataSet);
-        return SeedAsync(context, dataSet);
-    }
 
     /// <summary>
     ///     Seeds the database using the provided seed data provider.
     /// </summary>
-    public static async Task SeedWithProviderAsync(
-        VerticalSliceDataContext context,
-        ISeedDataProvider provider)
+    public static async Task SeedAsync(
+        VerticalSliceDataContext context)
     {
         await context.Database.EnsureCreatedAsync();
 
@@ -61,8 +24,6 @@ public static class DatabaseSeeder
         await SeedAuditsAsync(context);
 
         await context.SaveChangesAsync();
-
-
     }
 
     private static async Task SeedAuditsAsync(VerticalSliceDataContext context)
