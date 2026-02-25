@@ -112,6 +112,20 @@ npm start
 dotnet test
 ```
 
+## Using docker
+
+Run this in the repo root to build the application
+
+```bash
+docker build -t vertical-slice .
+```
+
+Then, you can run that with
+
+```bash
+docker run -p 8080:8080 vertical-slice
+```
+
 ## 📁 Project Structure
 
 ```
@@ -162,13 +176,7 @@ Orval generates a fully-typed TypeScript client from the OpenAPI spec:
 import { useVerticalSliceClient } from '@/api'
 
 function MyComponent() {
-  const apiClient = useVerticalSliceClient() // Auto-authenticated!
-  
-  const response = await apiClient.audit.getRecords({
-    page: 1,
-    pageSize: 20
-  })
-  // response is fully typed!
+  const apiClient = useVerticalSliceClient()   
 }
 ```
 
@@ -193,12 +201,13 @@ function MyComponent() {
 - **.NET Aspire 13.1** - Orchestration and observability
 - **GitHub Copilot** - AI pair programming
 - **Playwright** - End-to-end testing
-
+- **Docker** - Containerised goodness
+- 
 ## 📝 Adding a New Feature (Vertical Slice)
 
 Once you've pulled the repo, here's a prompt to get you going. Use your tooling of choice, let's create an entirely new API and some screens in a single shot!
 
-```plaintext
+```
 We’re generating new screens to model geography data in the system  - we need a new screen to display a list of geographies, and one that allows us to perform adds and updates.
 
 1.	Build new endpoints that returns a paginated list of geography data, as well as 'get single geography by id', and 'add or update a geography'
@@ -213,6 +222,8 @@ We’re generating new screens to model geography data in the system  - we need 
 ```
 
 The AI and automated generation should wire everything up - you'll have a fairly large number of files created after running the prompt - but all hyper localised on 'listing and maintaining geography data'. You can quickly see how this pattern will allow you to add more and more functionality, while keeping quality high through testing the overall API architecture with automated data-seeding baked in.
+
+Once you've run the prompt - give the app a run and see what it's created! you should have some new navigation items, a list of geography data and edit screens for maintaining the information. all fully functional, following an API first approach
 
 
 ### Backend
@@ -279,20 +290,6 @@ View in Aspire Dashboard or export to your preferred backend (Jaeger, Zipkin, Ap
     "Audience": "https://vertical-slice.com/"
   }
 }
-```
-
-## Using docker
-
-Run this in the repo root to build the application
-
-```bash
-docker build -t vertical-slice .
-```
-
-Then, you can run that with
-
-```bash
-docker run -p 8080:8080 vertical-slice
 ```
 
 That runs the dotnet application, serving the react app and API on the same port, with the api routing via /api/ and all other paths routing to the client react router
