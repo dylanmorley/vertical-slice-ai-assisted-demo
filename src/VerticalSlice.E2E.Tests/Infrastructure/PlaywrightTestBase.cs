@@ -5,9 +5,6 @@ namespace VerticalSlice.E2E.Tests.Infrastructure;
 
 /// <summary>
 ///     Base class for Playwright E2E tests that manages browser lifecycle and authentication.
-///     Uses the AspireAppFixture to ensure the full application stack is running.
-///     Auth state is persisted after the first login so subsequent tests reuse the session
-///     and the browser stays on the application (not the Auth0 login screen).
 /// </summary>
 [TestFixture]
 public abstract class PlaywrightTestBase

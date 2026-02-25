@@ -113,22 +113,4 @@ public class VerticalSliceApplication : WebApplicationFactory<VerticalSlice.Web.
         await DatabaseSeeder.SeedAsync(db);
         Console.WriteLine("Database reset completed.");
     }
-
-    /// <summary>
-    /// Ensures the database is clean and seeded before each test
-    /// </summary>
-    public async Task EnsureCleanDatabaseAsync()
-    {
-        using var scope = Services.CreateScope();
-        var db = scope.ServiceProvider.GetRequiredService<VerticalSliceDataContext>();
-
-        // Check if database has any data
-        var hasData = await db.Audit.AnyAsync();
-
-        if (!hasData)
-        {
-            // Database is empty, reseed it
-            await DatabaseSeeder.SeedAsync(db);
-        }
-    }
 }

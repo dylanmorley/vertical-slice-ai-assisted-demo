@@ -43,12 +43,4 @@ public abstract class ContextBase(HttpClient httpClient)
     {
         ResponseContent = await Response?.Content.ReadAsStringAsync()!;
     }
-
-    public async Task The_last_identifier_created_is_read()
-    {
-        await The_response_content_is_read();
-        LastIdResult = JsonSerializer.Deserialize<IdResult>(ResponseContent);
-    }
-
-    public IdResult? LastIdResult { get; set; }
 }
