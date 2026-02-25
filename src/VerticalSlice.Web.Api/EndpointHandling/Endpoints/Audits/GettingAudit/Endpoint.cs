@@ -1,4 +1,4 @@
-using CQRS.Mediatr.Lite;
+using Kommand.Abstractions;
 using VerticalSlice.Web.Api.Contracts.Response;
 using VerticalSlice.Web.Api.EndpointHandling.Endpoints.Audits.Data.Mappers;
 using VerticalSlice.Web.Api.EndpointHandling.Endpoints.Audits.Data.Queries;
@@ -14,7 +14,7 @@ internal static class GetAuditDetailsEndpoint
             .MapGet(
                 "/audit",
                 async (
-                    IQueryService queryHandler,
+                    IMediator mediator,
                     int page = 1,
                     int pageSize = 50,
                     int? organizationId = null,
@@ -44,7 +44,7 @@ internal static class GetAuditDetailsEndpoint
                         SearchTerm = searchTerm
                     };
 
-                    GetAllAuditQueryResult? result = await queryHandler.Query(query);
+                    GetAllAuditQueryResult? result = await mediator.QueryAsync(query, ct);
 
                     return result.Audits.ToPagedResponse(page, pageSize, result.TotalCount);
                 })

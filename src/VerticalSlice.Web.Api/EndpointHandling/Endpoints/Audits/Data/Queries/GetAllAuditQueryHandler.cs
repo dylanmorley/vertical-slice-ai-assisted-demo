@@ -1,4 +1,4 @@
-using CQRS.Mediatr.Lite;
+using Kommand.Abstractions;
 using Microsoft.EntityFrameworkCore;
 using VerticalSlice.Web.Api.Data;
 using VerticalSlice.Web.Api.Model;
@@ -12,12 +12,12 @@ public class GetAllAuditQueryResult
 }
 
 public class GetAllAuditQueryHandler(VerticalSliceDataContext dataContext)
-    : QueryHandler<GetAllAuditQuery, GetAllAuditQueryResult>
+    : IQueryHandler<GetAllAuditQuery, GetAllAuditQueryResult>
 {
     private readonly VerticalSliceDataContext _dataContext =
         dataContext ?? throw new ArgumentNullException(nameof(dataContext));
 
-    protected override async Task<GetAllAuditQueryResult> ProcessRequest(GetAllAuditQuery request)
+    public async Task<GetAllAuditQueryResult> HandleAsync(GetAllAuditQuery request, CancellationToken cancellationToken)
     {
         IQueryable<Audit> baseQuery = _dataContext.Audit.AsQueryable();
 

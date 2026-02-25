@@ -17,20 +17,8 @@ public static class DataConfiguration
                         builder.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery));
                     break;
 
-                case SqlProviderType.MySql:
-                    options.UseMySql(
-                        sqlConnectionString,
-                        ServerVersion.AutoDetect(sqlConnectionString), builder =>
-                            builder.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery));
-                    break;
-
                 case SqlProviderType.SqlServer:
                     options.UseSqlServer(sqlConnectionString, builder =>
-                        builder.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery));
-                    break;
-
-                case SqlProviderType.PostgreSql:
-                    options.UseNpgsql(sqlConnectionString, builder =>
                         builder.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery));
                     break;
 

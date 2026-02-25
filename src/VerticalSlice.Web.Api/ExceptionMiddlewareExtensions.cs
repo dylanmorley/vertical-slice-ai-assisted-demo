@@ -1,6 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Net;
-using CQRS.Mediatr.Lite.Exceptions;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 
@@ -25,7 +24,7 @@ public static class ExceptionMiddlewareExtensions
                             KeyNotFoundException => (int)HttpStatusCode.NotFound,
                             InvalidOperationException ex when ex.Message.Contains("not found",
                                 StringComparison.OrdinalIgnoreCase) => (int)HttpStatusCode.NotFound,
-                            InvalidOperationException or RequestValidationException => (int)HttpStatusCode.BadRequest,
+                            InvalidOperationException => (int)HttpStatusCode.BadRequest,
                             _ => (int)HttpStatusCode.InternalServerError
                         };
 

@@ -82,7 +82,13 @@ public static class ServiceRegistration
 
         builder.Services.AddAuthorization();
         builder.Services.AddOpenTelemetry(builder.Configuration);
-        builder.Services.AddCqrsServices();
+
+        builder.Services.AddKommand(config =>
+        {
+            config.RegisterHandlersFromAssembly(typeof(Program).Assembly);
+            config.WithValidation();
+        });
+
 
         string? sqlConnectionString = builder.Configuration.GetConnectionString("VerticalSliceDatabase");
         var providerTypeString = builder.Configuration["Database:ProviderType"];
