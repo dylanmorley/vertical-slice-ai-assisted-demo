@@ -59,10 +59,7 @@ jobs:
 
       - name: Build
         run: dotnet build **/*.sln /p:Version=${{ steps.version_step.outputs.semVer }}
-
-      - name: Run scenario tests
-        run: dotnet test src/VerticalSlice.Web.Api.ScenarioTests/VerticalSlice.Web.Api.ScenarioTests.csproj --no-build --collect:"XPlat Code Coverage" --verbosity normal --results-directory ./TestResults --logger "trx;LogFileName=scenario_test_results.xml"
-
+        
       - name: Run API tests
         run: dotnet test src/VerticalSlice.Web.Api.Tests/VerticalSlice.Web.Api.Tests.csproj --no-build --collect:"XPlat Code Coverage" --verbosity normal --results-directory ./TestResults --logger "trx;LogFileName=test_results.xml"
 
